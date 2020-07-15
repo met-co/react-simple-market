@@ -1,6 +1,0 @@
-[submodule "iOS_AudioModule"]
-	path = iOS_AudioModule
-	url = https://github.com/jinShine/iOS_AudioModule.git
-[submodule "RootProject/Login/Login/Login/Library/SnapKit"]
-	path = RootProject/Login/Login/Login/Library/SnapKit
-	url = https://github.com/SnapKit/SnapKit.git
