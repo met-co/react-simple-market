@@ -1,0 +1,3 @@
+[submodule "iOS_AudioModule"]
+	path = iOS_AudioModule
+	url = https://github.com/jinShine/iOS_AudioModule.git
