@@ -1,1 +1,1 @@
-home feature 제작
+detail 작업
