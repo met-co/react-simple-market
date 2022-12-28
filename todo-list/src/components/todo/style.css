@@ -1,0 +1,50 @@
+.todo-container {
+  border: 3px solid orange;
+  border-radius: 12px;
+  padding: 12px 24px;
+  width: 300px;
+  margin: 12px 12px 12px 0px;
+}
+
+.todo-container__title {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.todo-container__content {
+  font-size: 16px;
+}
+
+button {
+  border: none;
+  height: 32px;
+  border-radius: 10px;
+}
+
+.todo-container__btn-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.todo-container__btn-group__delete {
+  border: 2px solid red;
+  background-color: white;
+  color: black;
+  font-size: 13px;
+  font-weight: 600;
+  height: 32px;
+  width: 10%;
+}
+
+.todo-container__btn-group__updateState {
+  border: 2px solid green;
+  background-color: white;
+  color: black;
+  font-size: 13px;
+  font-weight: 600;
+  height: 32px;
+  width: 75%;
+}
