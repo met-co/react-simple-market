@@ -7,7 +7,6 @@ const Layout = ({ children }) => {
 export default Layout;
 
 const StWrap = styled.div`
-  /* font-family: "Montserrat", sans-serif; */
   font-family: "Gowun Dodum", sans-serif;
   max-width: 1200px;
   min-width: 800px;
