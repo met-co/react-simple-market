@@ -56,6 +56,7 @@ const ProductRegistration = () => {
               안녕하세요. 상품등록합니다
               반갑습니다. 안녕하세요.
               FLEA MARKET
+              ㅇㄹㄴㅁ
             </div>
             <Button variant="outlined">Outlined</Button>
           </StImgBox>
