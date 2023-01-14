@@ -1,3 +1,5 @@
+// import { createTheme } from "@mui/material/styles";
+
 export const gTheme = {
   color: {
     primary: "#004A7C",
@@ -6,3 +8,11 @@ export const gTheme = {
     quaternary: "#FAFAFA",
   },
 };
+
+// export const theme = createTheme({
+//   palette: {
+//     primary: {
+//       main: "#004A7C",
+//     },
+//   },
+// });

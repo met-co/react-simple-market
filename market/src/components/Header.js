@@ -15,9 +15,13 @@ const Header = () => {
 export default Header;
 
 const StContainer = styled.div`
-  height: 100px;
+  position: sticky;
+  top: 0;
+  max-width: 1200px;
+  height: 70px;
   display: flex;
   justify-content: space-between;
+  align-items: center;
   align-items: center;
   padding: 20px;
   & > div > img {
