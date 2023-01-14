@@ -52,7 +52,11 @@ const ProductRegistration = () => {
           </StInputBox>
           {/* 이미지 등록 구역 div */}
           <StImgBox>
-            <div>이미지 구역</div>
+            <div>이미지 구역
+              안녕하세요. 상품등록합니다
+              반갑습니다. 안녕하세요.
+              FLEA MARKET
+            </div>
             <Button variant="outlined">Outlined</Button>
           </StImgBox>
         </StWrap>
