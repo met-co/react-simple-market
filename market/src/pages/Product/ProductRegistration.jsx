@@ -8,18 +8,70 @@ import Header from "../../components/Header";
 import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import DeleteIcon from '@mui/icons-material/Delete';
 import InputLabel from '@mui/material/InputLabel';
 // import { gTheme } from "../../theme/globalTheme";
 import { FormControl } from "@mui/material";
+import { __addPostThunk } from "../../redux/modules/productSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 
 const ProductRegistration = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const [age, setAge] = useState('');
+  const [age, setAge] = useState('');
 
-    const handleChange = (e) => {
-      setAge(e.target.value)};
+  const handleChange = (e) => {
+    setAge(e.target.value)};
+    
+  const [post, setPost] = useState({
+    name: "",
+    description: "",
+    price: "",
+    file: "",
+  });
+
+
+  const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState("");
+
+  const imageUpLoad = (e)=> {
+    imagePreview(e.target.files[0]);
+    setImageFile(e.target.files[0]);
+    console.log("img", imageFile);
+    setPost({
+      ...post,
+      file: e.target.files[0],
+    })
+    console.log("img", imageFile);
+  }
+
+  console.log("img", imageFile);
+  
+  const imagePreview = (fileBlob) =>{
+    const reader = new FileReader();
+    reader.readAsDataURL(fileBlob);
+    return new Promise((resolve) =>{
+      reader.onload = () => {
+        setImage(reader.result);
+        resolve();
+      }
+    })
+  }
+
+  
+
+
+  const onChangeHandler = (event) => {
+    const {name, value} = event.target;
+    setPost({
+      ...post,
+      [name] : value,
+    })
+  };
+  
+  console.log("post", post);
 
   return (
     <Layout>
@@ -27,22 +79,49 @@ const ProductRegistration = () => {
        
          
         <Stdiv>
-          <Button variant="outlined">이 전 으 로</Button>
+          <Button variant="contained">이 전 으 로</Button>
         </Stdiv>
         
         {/* 전체를 감싸는 div */}
         <StContainer>
-          <StForm>
+          <StForm
+          onSubmit={(event) => {
+            console.log("submit");
+            event.preventDefault();
+            if (
+              post.name.trim() === "" ||
+              post.price.trim() === "" ||
+              post.description.trim() === ""
+            ) {
+              return alert("모든 항목을 입력해주세요.");
+            }
+            dispatch(__addPostThunk(post));
+            console.log("submit2");
+            setPost({ name: "", price: "", description: "" });
+            navigate("/")
+          }}
+          >
           {/* input 구역 div */}
           <StInputBox>
             {/* <StInputdiv> */}
             
             
               {/* <span>상 품 명</span> */}
-              <TextField id="standard-basic" label="상 품 명" variant="standard" />
+              <TextField 
+              id="standard-basic"
+              label="상 품 명"
+              variant="standard" 
+              onChange={onChangeHandler}
+              value={post.name || ""}
+              name="name"
+              maxLength={20}
+              />
             
               {/* <span>가 격</span> */}
-              <TextField id="standard-basic" label="가 격" variant="standard" />
+              <TextField id="standard-basic" label="가 격" variant="standard" 
+              onChange={onChangeHandler} value={post.price || ""} name="price"
+              maxLength={20}
+              />
           
              
             
@@ -50,14 +129,15 @@ const ProductRegistration = () => {
             
               
               {/* select box */}
-              <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">카 테 고 리</InputLabel>
+              <FormControl variant="standard" fullWidth>
+              <InputLabel id="demo-simple-select-standard-label">카 테 고 리</InputLabel>
           
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                labelId="demo-simple-select-standard-label"
+                id="demo-simple-select-standard"
                 value={age}
                 label="category"
+                onChange={handleChange}
                 
                 >
                 <MenuItem value={10}>Ten</MenuItem>
@@ -69,25 +149,34 @@ const ProductRegistration = () => {
 
               {/* <div>상 품 설 명</div> */}
               <Textarea
-                name="content"
                 rows="10"
                 maxLength={200}
-                // onChange={onChangeHandler}
                 placeholder="상품 설명을 입력해주세요. (200자 이내)"
-                // value={guestbook.content}
+                onChange={onChangeHandler}
+                value={post.description || ""}
+                name="description"
               />
             
-              <Button variant="outlined">Outlined</Button>
+              <Button variant="contained" type="submit">판매글 등록하기</Button>
               {/* </StInputdiv> */}
           </StInputBox>
 
 
           {/* 이미지 등록 구역 div */}
           <StImgBox>
-            <div>이미지 구역</div>
+            <ViewImg>
+              {/* <img  src="img/base_img.png"/> */}
+              {/* 판매할 상품 사진을 등록해주세요. */}
+              <img src={image}/>
+            </ViewImg>
             <div>
-            <Button variant="outlined">이미지 저장</Button>
-            <Button variant="outlined">이미지 삭제</Button>
+            <Button variant="contained" component="label">
+                        Upload
+                <input hidden accept="image/*" multiple type="file" onChange={imageUpLoad}/>
+              </Button>
+              <Button variant="contained" startIcon={<DeleteIcon />}>
+                   Delete
+              </Button>
             </div>
           </StImgBox>
           </StForm>
@@ -107,8 +196,9 @@ const StForm = styled.form`
   width: 100%;
   display: flex;
   flex-direction: row;
-  gap : 60px;
-  padding: 10px;
+  padding: 0px 10px 10px 10px;
+  margin-left: 40px;
+  margin-top: 60px;
 `;
 
 const StInputBox = styled.div`
@@ -118,7 +208,7 @@ const StInputBox = styled.div`
   flex-direction: column;
   width: 50%;
   font-size: 20px;
-  padding: 0px 40px 0px 40px;
+  padding: 0px 100px 0px 100px;
   & > div{
     padding-bottom: 20px;
     width: 100%;
@@ -135,30 +225,44 @@ display: flex;
 align-items: center;
 justify-content: center;
 flex-direction: column;
- & > div:first-child {
-  background-color: lightblue;
+padding: 15px 40px 0px 40px;
+margin-right: 40px;
+ /* & > div:first-child {
   width: 60%;
   height: 370px;
   margin-top: 40px;
-  
- }
+ } */
  & > div:nth-child(2) {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 20px;
   width: 100%;
-  margin-top: 20px;
+  margin-top: 40px;
   
  }
- & > div:nth-child(2) button {
- }
+ /* & > div:nth-child(2) button {
+  
+ } */
 `;
 
 const Stdiv = styled.div`
   display: flex;
   flex-direction: row-reverse;
   padding: 20px 110px 0px 0px;
+`;
+
+const ViewImg = styled.div`
+  border: 1px solid #004A7C;
+  width: 80%;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img{
+  width: 100%;
+  height: 100%;
+  }
 `;
 
 // const StInputdiv = styled.div`
@@ -175,8 +279,7 @@ const Textarea = styled.textarea`
   /* border: 1px solid #004A7C; */
   padding: 12px;
   /* margin-top: 30px; */
-  margin-bottom: 40px;
+  margin-top: 20px;
+  margin-bottom: 60px;
   font-size: 14px;
 `;
-
-
