@@ -13,7 +13,7 @@ const Signin = () => {
   const navigate = useNavigate();
   const { register, watch, handleSubmit } = useForm();
 
-  console.log(watch());
+  console.log(watch(), "watch");
 
   const handleLogin = (data) => {
     console.log(data);
