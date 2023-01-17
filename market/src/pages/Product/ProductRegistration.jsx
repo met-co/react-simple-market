@@ -14,6 +14,7 @@ import InputLabel from '@mui/material/InputLabel';
 import { FormControl } from "@mui/material";
 import { __addPostThunk } from "../../redux/modules/productSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { gTheme } from "../../theme/globalTheme";
 
 
 const ProductRegistration = () => {
@@ -36,19 +37,7 @@ const ProductRegistration = () => {
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState("");
 
-  const imageUpLoad = (e)=> {
-    imagePreview(e.target.files[0]);
-    setImageFile(e.target.files[0]);
-    console.log("img", imageFile);
-    setPost({
-      ...post,
-      file: e.target.files[0],
-    })
-    console.log("img", imageFile);
-  }
 
-  console.log("img", imageFile);
-  
   const imagePreview = (fileBlob) =>{
     const reader = new FileReader();
     reader.readAsDataURL(fileBlob);
@@ -60,7 +49,14 @@ const ProductRegistration = () => {
     })
   }
 
-  
+  const imageUpLoad = (e)=> {
+    imagePreview(e.target.files[0]);
+    setImageFile(e.target.files[0]);
+    setPost({
+      ...post,
+      file: e.target.files[0],
+    })
+  }
 
 
   const onChangeHandler = (event) => {
@@ -70,23 +66,23 @@ const ProductRegistration = () => {
       [name] : value,
     })
   };
-  
+
   console.log("post", post);
 
   return (
     <Layout>
       <Header />
-       
-         
+
         <Stdiv>
-          <Button variant="contained">이 전 으 로</Button>
+          <Button variant="contained" sx={{ bgcolor: gTheme.color.primary }} onClick={() => {
+                navigate("/");
+              }}>이 전 으 로</Button>
         </Stdiv>
         
         {/* 전체를 감싸는 div */}
         <StContainer>
           <StForm
           onSubmit={(event) => {
-            console.log("submit");
             event.preventDefault();
             if (
               post.name.trim() === "" ||
@@ -96,7 +92,6 @@ const ProductRegistration = () => {
               return alert("모든 항목을 입력해주세요.");
             }
             dispatch(__addPostThunk(post));
-            console.log("submit2");
             setPost({ name: "", price: "", description: "" });
             navigate("/")
           }}
@@ -157,7 +152,7 @@ const ProductRegistration = () => {
                 name="description"
               />
             
-              <Button variant="contained" type="submit">판매글 등록하기</Button>
+              <Button variant="contained" type="submit" sx={{ bgcolor: gTheme.color.primary }}>판매글 등록하기</Button>
               {/* </StInputdiv> */}
           </StInputBox>
 
@@ -170,11 +165,11 @@ const ProductRegistration = () => {
               <img src={image}/>
             </ViewImg>
             <div>
-            <Button variant="contained" component="label">
+            <Button variant="contained" component="label" sx={{ bgcolor: gTheme.color.primary }}>
                         Upload
                 <input hidden accept="image/*" multiple type="file" onChange={imageUpLoad}/>
               </Button>
-              <Button variant="contained" startIcon={<DeleteIcon />}>
+              <Button variant="contained" startIcon={<DeleteIcon />} sx={{ bgcolor: gTheme.color.primary }}>
                    Delete
               </Button>
             </div>
