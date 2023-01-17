@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { gTheme } from "../../theme/globalTheme";
@@ -7,27 +7,34 @@ import { TextField } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { __signup } from "../../redux/modules/userSlice";
+import { __profileImageUpload } from "../../redux/modules/fileSlice";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const profileData = useSelector((state) => state.file.fileData);
   const { register, watch, handleSubmit } = useForm();
   const [imageURL, setImageURL] = useState("/img/default_profile.png");
 
-  const handleSignup = (data) => {
-    console.log(data);
+  useEffect(() => {
+    setImageURL(profileData.url);
+  }, [profileData]);
+
+  const handleSignup = (user) => {
+    dispatch(__signup(user));
   };
+
   const handleError = (error) => {
     console.log(error);
   };
+
   const handleSelectedImage = (e) => {
     const img = e.target.files[0];
     const formData = new FormData();
     formData.append("file", img);
-
-    // const response = await apiClient.post("~~", formData)
-    // setImageURL(
-    //   "https://cdn.comento.kr/images/edu/banner-4.jpg?s=978x780&q=75"
-    // );
+    dispatch(__profileImageUpload(formData));
   };
 
   return (
@@ -50,14 +57,12 @@ const Signup = () => {
             margin="normal"
             required
             fullWidth
-            id="id"
+            id="username"
             label="아이디"
-            name="id"
+            name="username"
             autoComplete="id"
             autoFocus
-            {...register("id", {
-              minLength: { value: 5, message: "테스트" },
-            })}
+            {...register("username")}
           />
           <TextField
             margin="normal"
@@ -74,16 +79,16 @@ const Signup = () => {
             margin="normal"
             required
             fullWidth
-            name="password-confirm"
+            name="passwordCheck"
             label="비밀번호 재확인"
             type="password"
-            id="password-confirm"
+            id="passwordCheck"
             autoComplete="current-password"
-            {...register("password-confirm", {})}
+            {...register("passwordCheck", {})}
           />
           <TextField
             margin="normal"
-            required
+            // required
             fullWidth
             name="nickname"
             label="닉네임"
