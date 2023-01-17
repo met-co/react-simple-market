@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { client } from "../../shared/api";
+import { client } from "../../shared/api/api";
+import { authAPI } from "../../shared/api/authAPI";
 
-const actionType = {
+export const actionType = {
   user: {
     POST_SIGNUP: "POST_SIGNUP",
     POST_SIGNIN: "POST_SIGNIN",
@@ -21,11 +22,20 @@ export const __signup = createAsyncThunk(
   actionType.user.POST_SIGNUP,
   async (user, thunkAPI) => {
     try {
-      const result = await client.post(
+      // console.log("111", client);
+      const result = await authAPI.post(
         process.env.REACT_APP_BASE_URL + "/api/user/signup",
-        user
+        {
+          username: "buzz111111",
+          password: "qwer1234",
+          passwordCheck: "qwer1234",
+          nickname: "test",
+          imageResponseDto: {},
+        }
       );
-      return thunkAPI.fulfillWithValue(result);
+
+      console.log("RESULT!!:", result);
+      return thunkAPI.fulfillWithValue(result.data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -75,10 +85,11 @@ const userSlice = createSlice({
       })
       .addCase(__signup.fulfilled, (state, action) => {
         state.isLoading = false;
+        console.log("action", action);
       })
       .addCase(__signup.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        // state.error = action.payload;
       })
       // 로그인
       .addCase(__signin.pending, (state) => {

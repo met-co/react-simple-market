@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { authInstance, defaultInstance } from "../../shared/api";
+import { authInstance, client, defaultInstance } from "../../shared/api/api";
 
 ///////// 게시글 추가 thunk,POST ///////////////////
 export const __addPostThunk = createAsyncThunk(
@@ -89,7 +89,7 @@ export const __getPostThunk = createAsyncThunk(
   "GET_POSTS",
   async (payload, thunkAPI) => {
     try {
-      const { data } = await defaultInstance.get(`/posts`);
+      const { data } = await client.get(`/posts`);
       return thunkAPI.fulfillWithValue(data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
