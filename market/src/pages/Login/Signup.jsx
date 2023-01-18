@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import { gTheme } from "../../theme/globalTheme";
-
-import { TextField } from "@mui/material";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import { useDispatch, useSelector } from "react-redux";
-import styled from "styled-components";
-import { AlertView } from "../../components/ui/Alert";
+import { Link, useNavigate } from "react-router-dom";
 import {
   __fileReset,
   __profileImageUpload,
 } from "../../redux/modules/fileSlice";
 import { __signup, __userReset } from "../../redux/modules/userSlice";
+import { gTheme } from "../../theme/globalTheme";
+
+import { TextField } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import styled from "styled-components";
+import { AlertView } from "../../components/ui/Alert";
 import { Loading } from "../../components/ui/Loading";
+import { COMMON_DEALY_TIME } from "../../shared/utils/delay";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const Signup = () => {
         dispatch(__fileReset());
 
         navigate("/signin");
-      }, 1500);
+      }, COMMON_DEALY_TIME);
     }
   };
 

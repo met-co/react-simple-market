@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { client } from "../../shared/api/api";
 import { authAPI } from "../../shared/api/authAPI";
-import { gDelay } from "../../shared/utils/delay";
+import { COMMON_DEALY_TIME, gDelay } from "../../shared/utils/delay";
+import { tokenManager } from "../../shared/utils/tokenManager";
 
 export const actionType = {
   user: {
@@ -23,7 +24,7 @@ const initialState = {
 export const __signup = createAsyncThunk(
   actionType.user.POST_SIGNUP,
   async (user, thunkAPI) => {
-    await gDelay(1500);
+    await gDelay(COMMON_DEALY_TIME);
     try {
       const result = await authAPI.post(
         process.env.REACT_APP_BASE_URL + "/api/user/signup",
@@ -41,12 +42,13 @@ export const __signup = createAsyncThunk(
 export const __signin = createAsyncThunk(
   actionType.user.POST_SIGNIN,
   async (user, thunkAPI) => {
+    await gDelay(COMMON_DEALY_TIME);
     try {
       const result = await client.post(
         process.env.REACT_APP_BASE_URL + "/api/user/login",
         user
       );
-      return thunkAPI.fulfillWithValue(result);
+      return thunkAPI.fulfillWithValue(result.headers.authorization);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -87,6 +89,7 @@ const userSlice = createSlice({
       .addCase(__signup.fulfilled, (state, action) => {
         state.isSuccess = true;
         state.isLoading = false;
+        console.log(action);
       })
       .addCase(__signup.rejected, (state, action) => {
         state.isSuccess = false;
@@ -98,11 +101,14 @@ const userSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(__signin.fulfilled, (state, action) => {
+        state.isSuccess = true;
         state.isLoading = false;
+        tokenManager.token = action.payload;
       })
       .addCase(__signin.rejected, (state, action) => {
+        state.isSuccess = false;
         state.isLoading = false;
-        state.error = action.payload;
+        state.error = action.payload.response.data.errorMessage;
       })
       // 유저 정보
       .addCase(__userInfo.pending, (state) => {
