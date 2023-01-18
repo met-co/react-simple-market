@@ -1,0 +1,166 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { authInstance, client, defaultInstance } from "../../shared/api/api";
+
+///////// 게시글 추가 thunk,POST ///////////////////
+export const __addPostThunk = createAsyncThunk(
+  "ADD_POST",
+  async (payload, thunkAPI) => {
+    const formData = new FormData();
+
+    // const request = {
+    //   name: payload.name,
+    //   description: payload.description,
+    //   price: payload.price,
+    // };
+
+    // const json = JSON.stringify(request);
+    // const blob = new Blob([json], { type: "application/json" });
+
+    formData.append("name", payload.name);
+    formData.append("description", payload.description);
+    formData.append("price", payload.price);
+    formData.append("category", payload.category);
+    formData.append("image_url", payload.image_url);
+    // formData.append("request", blob);
+
+    try {
+      const { data } = await axios.post(
+        `http://43.201.34.54:8080/posts`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidXp6MzMiLCJhdXRoIjoiVVNFUiIsImV4cCI6MTY3Mzk2NTgyOCwiaWF0IjoxNjczOTYyMjI4fQ.xHvsgH0967ai0BoFuixvxHF0eoMw8Xc2-qoiK8dTRlw",
+          },
+          // params: {
+          //   page: 1,
+          //   size: 10,
+          //   isAsc: true,
+          //   sortBy: "id",
+          // },
+        }
+      );
+
+      // for (var key of formData.keys()) {
+      //   console.log(key);
+      // }
+      // for (var value of formData.values()) {
+      //   console.log(value);
+      // }
+
+      return thunkAPI.fulfillWithValue(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+///////// 이미지 업로드 thunk,POST ///////////////////
+export const __addProductImgPostThunk = createAsyncThunk(
+  "ADD_PRODUCT_IMG_POST",
+  async (payload, thunkAPI) => {
+    const formData = new FormData();
+
+    formData.append("file", payload.file);
+
+    try {
+      const { data } = await axios.post(
+        `http://43.201.34.54:8080/files/image`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization:
+              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0dGU0ISEiLCJhdXRoIjoiVVNFUiIsImV4cCI6MTY3Mzk3MTkyNywiaWF0IjoxNjczOTY4MzI3fQ.J3POP6SstOzeVLFfrQgG7urpbG-nadac4OSrbAtBL94",
+          },
+        }
+      );
+      return thunkAPI.fulfillWithValue(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+///////// 전체 게시글 조회 thunk,GET ///////////////////
+export const __getPostThunk = createAsyncThunk(
+  "GET_POSTS",
+  async (payload, thunkAPI) => {
+    try {
+      const { data } = await client.get(`/posts`);
+      return thunkAPI.fulfillWithValue(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+///////// 게시글 삭제 thunk,DELETE ///////////////////
+
+/////////////// 게시글 수정 ////////////////////////
+
+/////////// 단일 게시글 조회 /////////////////
+
+///////////// initialState //////////////////////////
+const initialState = {
+  post_list: [],
+  post: {
+    id: 0,
+    name: "",
+    discription: "",
+    price: 0,
+    // category: "",
+    // image: "",
+  },
+  error: null,
+  isLoading: false,
+};
+
+/////////////// slice /////////////
+export const productSlice = createSlice({
+  name: "posts",
+  initialState,
+  reducers: {},
+  extraReducers: {
+    [__getPostThunk.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [__getPostThunk.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.post_list = action.payload;
+    },
+    [__getPostThunk.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    [__addPostThunk.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [__addPostThunk.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.post_list = [...state.post_list, action.payload];
+    },
+    [__addPostThunk.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    [__addProductImgPostThunk.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [__addProductImgPostThunk.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      // state.post_list = [...state.post_list, action.payload];
+    },
+    [__addProductImgPostThunk.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+  },
+});
+
+// 액션크리에이터는 컴포넌트에서 사용하기 위해 export 하고
+// export const {} = guestBooksSlice.actions;
+// reducer 는 configStore에 등록하기 위해 export default 합니다.
+export default productSlice.reducer;

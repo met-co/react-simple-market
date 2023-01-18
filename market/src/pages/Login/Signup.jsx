@@ -1,42 +1,76 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  __fileReset,
+  __profileImageUpload,
+} from "../../redux/modules/fileSlice";
+import { __signup, __userReset } from "../../redux/modules/userSlice";
 import { gTheme } from "../../theme/globalTheme";
 
 import { TextField } from "@mui/material";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import styled from "styled-components";
+import { AlertView } from "../../components/ui/Alert";
+import { Loading } from "../../components/ui/Loading";
+import { COMMON_DEALY_TIME } from "../../shared/utils/delay";
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { register, watch, handleSubmit } = useForm();
-  const [imageURL, setImageURL] = useState("/img/default_profile.png");
+  const dispatch = useDispatch();
+  const { fileData } = useSelector((state) => state.file);
+  const { isSuccess, isLoading, error } = useSelector((state) => state.user);
+  const { register, handleSubmit } = useForm();
+  const [alertMessage, setAlertMessage] = useState({ type: "", message: "" });
 
-  const handleSignup = (data) => {
-    console.log(data);
+  useEffect(() => {
+    setAlertMessage({ type: "error", message: error });
+
+    handleSuccess();
+  }, [fileData, error, isSuccess]);
+
+  const handleSignup = (user) => {
+    user.imageResponseDto = fileData;
+    dispatch(__signup(user));
   };
+
   const handleError = (error) => {
     console.log(error);
   };
+
   const handleSelectedImage = (e) => {
     const img = e.target.files[0];
     const formData = new FormData();
     formData.append("file", img);
 
-    // const response = await apiClient.post("~~", formData)
-    // setImageURL(
-    //   "https://cdn.comento.kr/images/edu/banner-4.jpg?s=978x780&q=75"
-    // );
+    dispatch(__profileImageUpload(formData));
+  };
+
+  const handleSuccess = () => {
+    if (isSuccess) {
+      setAlertMessage({ type: "success", message: "가입 성공🎉" });
+
+      setTimeout(() => {
+        dispatch(__userReset());
+        dispatch(__fileReset());
+
+        navigate("/signin");
+      }, COMMON_DEALY_TIME);
+    }
   };
 
   return (
     <SWrapper>
       <SCard>
+        {alertMessage.message && (
+          <AlertView type={alertMessage.type} message={alertMessage.message} />
+        )}
         <STitleContainer>
           <STitle>회원가입</STitle>
           <Button component="label">
-            <Avatar src={imageURL} sx={{ width: 80, height: 80 }} />
+            <Avatar src={fileData.url} sx={{ width: 80, height: 80 }} />
             <input
               hidden
               accept="image/*"
@@ -50,14 +84,12 @@ const Signup = () => {
             margin="normal"
             required
             fullWidth
-            id="id"
+            id="username"
             label="아이디"
-            name="id"
+            name="username"
             autoComplete="id"
             autoFocus
-            {...register("id", {
-              minLength: { value: 5, message: "테스트" },
-            })}
+            {...register("username")}
           />
           <TextField
             margin="normal"
@@ -74,16 +106,16 @@ const Signup = () => {
             margin="normal"
             required
             fullWidth
-            name="password-confirm"
+            name="passwordCheck"
             label="비밀번호 재확인"
             type="password"
-            id="password-confirm"
+            id="passwordCheck"
             autoComplete="current-password"
-            {...register("password-confirm", {})}
+            {...register("passwordCheck", {})}
           />
           <TextField
             margin="normal"
-            required
+            // required
             fullWidth
             name="nickname"
             label="닉네임"
@@ -92,6 +124,7 @@ const Signup = () => {
             autoComplete="nickname"
             {...register("nickname", {})}
           />
+          <SLoadingContainer>{isLoading && <Loading />}</SLoadingContainer>
           <SButton
             type="submit"
             fullWidth
@@ -120,11 +153,19 @@ export default Signup;
 
 const SWrapper = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100vh;
   margin: auto;
+`;
+
+const SLoadingContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `;
 
 const SCard = styled.div`

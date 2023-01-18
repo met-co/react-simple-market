@@ -1,13 +1,37 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { gTheme } from "../theme/globalTheme";
+import { Button } from "@mui/material";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const { pathname } = window.location;
+
   return (
     <StContainer>
-      <div>
-        <img src="img/fleamarket.png" />
+      <div onClick={() => navigate("/")}>
+        <img src="img/fleamarket2.png" />
       </div>
-      <div>안녕하세요</div>
+      {pathname === "/" && (
+        <StBtnContainer>
+          <Button
+            variant="contained"
+            sx={{ bgcolor: gTheme.color.primary }}
+            onClick={() => navigate("/product-registration")}
+          >
+            상품 등록
+          </Button>
+          <Button
+            variant="contained"
+            sx={{ bgcolor: gTheme.color.primary }}
+            onClick={() => navigate("/signin")}
+          >
+            로그인
+          </Button>
+        </StBtnContainer>
+      )}
+      {pathname === "/product-registration" && <div>님 안녕하세요.</div>}
     </StContainer>
   );
 };
@@ -22,10 +46,16 @@ const StContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  align-items: center;
   padding: 20px;
+  backdrop-filter: blur(30px);
   & > div > img {
     width: 80px;
     height: 80px;
+    cursor: pointer;
   }
+`;
+
+const StBtnContainer = styled.div`
+  display: flex;
+  gap: 30px;
 `;
