@@ -6,6 +6,7 @@ export const actionType = {
     GET_COMMENTS_BY_PRODUCT_ID: "GET_COMMENTS_BY_PRODUCT_ID",
     POST_COMMENT: "POST_COMMENT",
     DELETE_COMMENT: "DELETE_COMMENT",
+    MODIFY_COMMENT: "MODIFY_COMMENT",
   },
 };
 
@@ -45,11 +46,26 @@ export const __submitComment = createAsyncThunk(
 /* 댓글 삭제 */
 export const __deleteComment = createAsyncThunk(
   actionType.comment.DELETE_COMMENT,
-  async (productId, thunkAPI) => {
+  async (commentId, thunkAPI) => {
     try {
-      let result = await client.delete(`/comments/${productId}`);
+      let result = await client.delete(`/comments/${commentId}`);
       console.log(result.data);
-      return thunkAPI.fulfillWithValue(productId);
+      return thunkAPI.fulfillWithValue(commentId);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+/* 댓글 수정 */
+export const __modifyComment = createAsyncThunk(
+  actionType.comment.MODIFY_COMMENT,
+  async (payload, thunkAPI) => {
+    try {
+      let result = await client.patch(`/comments/${payload.commentId}`, {
+        comment: payload.comment,
+      });
+      return thunkAPI.fulfillWithValue(payload);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -106,6 +122,28 @@ const commentSlice = createSlice({
         );
       })
       .addCase(__deleteComment.rejected, (state, action) => {
+        state.isSuccess = false;
+        state.isLoading = false;
+        state.error = action.payload.response.data.errorMessage;
+      })
+      // 댓글 수정
+      .addCase(__modifyComment.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(__modifyComment.fulfilled, (state, action) => {
+        state.isSuccess = true;
+        state.isLoading = false;
+        state.comments = [...state.comments].map((comment) => {
+          if (comment.id === action.payload.commentId) {
+            const newComment = comment;
+            newComment.comment = action.payload.comment;
+            return newComment;
+          }
+
+          return comment;
+        });
+      })
+      .addCase(__modifyComment.rejected, (state, action) => {
         state.isSuccess = false;
         state.isLoading = false;
         state.error = action.payload.response.data.errorMessage;

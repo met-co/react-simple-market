@@ -226,7 +226,7 @@ export const productSlice = createSlice({
     [__detailPost.fulfilled]: (state, action) => {
       state.isLoading = false;
       state.detailPost = action.payload;
-      console.log("detailPost!!!!!", action.payload);
+      console.log("상세 데이터!", action.payload);
     },
     [__detailPost.rejected]: (state, action) => {
       state.isLoading = false;

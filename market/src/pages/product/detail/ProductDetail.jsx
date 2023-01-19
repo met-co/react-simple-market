@@ -18,6 +18,7 @@ import {
   __submitComment,
   __getComments,
   __deleteComment,
+  __modifyComment,
 } from "../../../redux/modules/commentSlice";
 
 const ProductDetail = () => {
@@ -50,10 +51,16 @@ const ProductDetail = () => {
       referenceId: productId,
     };
     dispatch(__submitComment(commentData));
+    setComment("");
   };
 
-  const handleCommentDelete = (productId) => {
-    dispatch(__deleteComment(productId));
+  const handleCommentDelete = (commentId) => {
+    dispatch(__deleteComment(commentId));
+  };
+
+  const handleCommentModify = (data) => {
+    const payload = { comment: data.comment, commentId: data.commentId };
+    dispatch(__modifyComment(payload));
   };
 
   useEffect(() => {
@@ -123,6 +130,7 @@ const ProductDetail = () => {
             <ProductCommentList
               comments={comments}
               onClickDelete={handleCommentDelete}
+              onClickModify={handleCommentModify}
             />
           </SCommentContainer>
         </SContentContainer>
