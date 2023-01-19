@@ -3,6 +3,16 @@ import axios from "axios";
 import { authInstance, client, defaultInstance } from "../../shared/api/api";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { authAPI } from "../../shared/api/authAPI";
+
+/* Action Type */
+export const actionType = {
+  product: {
+    GET_POST_DETAIL: "GET_POST_DETAIL",
+    POST_POST_FAVORITE: "POST_POST_FAVORITE",
+    DELETE_POST_FAVORITE: "DELETE_POST_FAVORITE",
+  },
+};
 
 ///////// 게시글 추가 thunk,POST ///////////////////
 export const __addPostThunk = createAsyncThunk(
@@ -44,31 +54,17 @@ export const __addPostThunk = createAsyncThunk(
     // console.log(newPayload);
 
     try {
-      const { data } = await axios.post(
-        `http://43.201.34.54:8080/posts`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0dGVzdEBAIiwiYXV0aCI6IlVTRVIiLCJleHAiOjE2NzQwNjM0MDQsImlhdCI6MTY3NDAyMDIwNH0.TFVHChWI4H3QCXmdMW2YB3ez_nLhuQeZnDkTNlrnNlo",
-          },
-          // params: {
-          //   page: 1,
-          //   size: 10,
-          //   isAsc: true,
-          //   sortBy: "id",
-          // },
-        }
+      const { data } = await client.post(
+        process.env.REACT_APP_BASE_URL + "/posts",
+        payload
       );
-      console.log("data", data);
       // for (var key of formData.keys()) {
       //   console.log(key);
       // }
       // for (var value of formData.values()) {
       //   console.log(value);
       // }
-
+      console.log(payload);
       return thunkAPI.fulfillWithValue(payload);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -109,12 +105,10 @@ export const __getPostThunk = createAsyncThunk(
   async (payload, thunkAPI) => {
     try {
       const { data } = await client.get(
-        `/posts`,
+        `/posts/get`,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0dGVzdEBAIiwiYXV0aCI6IlVTRVIiLCJleHAiOjE2NzQwNjM0MDQsImlhdCI6MTY3NDAyMDIwNH0.TFVHChWI4H3QCXmdMW2YB3ez_nLhuQeZnDkTNlrnNlo",
           },
           params: {
             page: 1,
@@ -135,9 +129,48 @@ export const __getPostThunk = createAsyncThunk(
 
 ///////// 게시글 삭제 thunk,DELETE ///////////////////
 
+export const __deletePost = createAsyncThunk(
+  actionType.product.DELETE_POST_FAVORITE,
+  async (id, thunkAPI) => {
+    try {
+      const result = await client.delete(`/posts/${id}`);
+      console.log(result);
+      return thunkAPI.fulfillWithValue(result.data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 /////////////// 게시글 수정 ////////////////////////
 
 /////////// 단일 게시글 조회 /////////////////
+
+export const __detailPost = createAsyncThunk(
+  actionType.product.GET_POST_DETAIL,
+  async (id, thunkAPI) => {
+    try {
+      const result = await client.get(`/posts/${id}`);
+      return thunkAPI.fulfillWithValue(result.data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+/////////// 상품 찜 /////////////////
+
+export const __productFavorite = createAsyncThunk(
+  actionType.product.POST_POST_FAVORITE,
+  async (id, thunkAPI) => {
+    try {
+      const result = await client.patch(`/posts/like/${id}`);
+      return thunkAPI.fulfillWithValue(result.data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
 
 ///////////// initialState //////////////////////////
 const initialState = {
@@ -152,6 +185,7 @@ const initialState = {
   },
   error: null,
   isLoading: false,
+  detailPost: {},
 };
 
 /////////////// slice /////////////
@@ -184,6 +218,42 @@ export const productSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
+    // 상품 상세
+    [__detailPost.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [__detailPost.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.detailPost = action.payload;
+      console.log("상세 데이터!", action.payload);
+    },
+    [__detailPost.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    // 상품 삭제
+    [__deletePost.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [__deletePost.fulfilled]: (state, action) => {
+      state.isLoading = false;
+    },
+    [__deletePost.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    // 찜하기
+    [__productFavorite.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [__productFavorite.fulfilled]: (state, action) => {
+      state.isLoading = false;
+    },
+    [__productFavorite.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+
     // [__addProductImgPostThunk.pending]: (state) => {
     //   state.isLoading = true;
     // },

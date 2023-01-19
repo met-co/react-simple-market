@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { gTheme } from "../../theme/globalTheme";
 import { __addProductImgPostThunk } from "../../redux/modules/productSlice";
 import { __productImageUpload } from "../../redux/modules/fileSlice";
+import { __userInfo } from "../../redux/modules/userSlice";
 
 
 const ProductRegistration = () => {
@@ -24,33 +25,40 @@ const ProductRegistration = () => {
   const dispatch = useDispatch();
   
   const productData = useSelector((state) => state.file.fileData);
+  
+
+  
+  
+
   const [imageURL, setImageURL] = useState("");
 
-  useEffect(() => {
-    setImageURL(productData.url);
-  }, [productData]);
- 
-
-
-
-  // useEffect(() => {
-  //   setImageURL("https://images.unsplash.com/photo-1600078307129-97e9d51d19cc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=976&q=80");
-  // }, [post.name]);
-
+  const [category, setCategory] = useState('');
+  const [image, setImage] = useState("img/base_img.png");
+  const [imageFile, setImageFile] = useState("");
 
   const [post, setPost] = useState({
     category: "",
     description: "",
-    imageResponseDto : productData,
+    imageResponseDto : "",
     name: "",
     price: "",
   });
 
 
-  const [category, setCategory] = useState('');
+  useEffect(() => {
+    setImageURL(productData.url);
+    setPost({
+      ...post,
+      imageResponseDto : productData,
+    })
+  }, [productData]);
+ 
 
-  const [image, setImage] = useState("https://images.unsplash.com/photo-1600078307129-97e9d51d19cc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=976&q=80");
-  const [imageFile, setImageFile] = useState("");
+
+
+  
+
+  
 
 
   const imagePreview = (fileBlob) =>{
@@ -85,7 +93,11 @@ const ProductRegistration = () => {
   };
 
   const handleDelete = () => {
-    setImage("https://images.unsplash.com/photo-1600078307129-97e9d51d19cc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=976&q=80");
+    setImage("img/base_img.png");
+    setPost({
+      ...post,
+      imageResponseDto : null,
+    });
   };
   
 
@@ -118,6 +130,32 @@ const ProductRegistration = () => {
             navigate("/")
           }}
           >
+
+           {/* 이미지 등록 구역 div */}
+          <StImgBox>
+            <ViewImg>
+              {/* <img  src="img/base_img.png"/> */}
+              {/* 판매할 상품 사진을 등록해주세요. */}
+              <img src={image}/>
+            </ViewImg>
+            <div>
+            <Button variant="contained" component="label" sx={{ bgcolor: gTheme.color.primary }}>
+                        Upload
+                <input hidden accept="image/*" multiple type="file" onChange={imageUpLoad}/>
+              </Button>
+              <Button 
+              variant="contained" 
+              startIcon={<DeleteIcon />}
+              sx={{ bgcolor: gTheme.color.primary }}
+              onClick={handleDelete}
+              >
+                   Delete
+              </Button>
+            </div>
+          </StImgBox>
+
+
+
           {/* input 구역 div */}
           <StInputBox>
             {/* <StInputdiv> */}
@@ -184,28 +222,7 @@ const ProductRegistration = () => {
 
           
 
-          {/* 이미지 등록 구역 div */}
-          <StImgBox>
-            <ViewImg>
-              {/* <img  src="img/base_img.png"/> */}
-              {/* 판매할 상품 사진을 등록해주세요. */}
-              <img src={image}/>
-            </ViewImg>
-            <div>
-            <Button variant="contained" component="label" sx={{ bgcolor: gTheme.color.primary }}>
-                        Upload
-                <input hidden accept="image/*" multiple type="file" onChange={imageUpLoad}/>
-              </Button>
-              <Button 
-              variant="contained" 
-              startIcon={<DeleteIcon />}
-              sx={{ bgcolor: gTheme.color.primary }}
-              onClick={handleDelete}
-              >
-                   Delete
-              </Button>
-            </div>
-          </StImgBox>
+         
           </StForm>
         </StContainer>
       </Layout>
@@ -216,15 +233,17 @@ export default ProductRegistration;
 
 const StContainer = styled.div`
   color : black;
+  width: 1200px;
   height: 100%;
 `;
 
 const StForm = styled.form`
   width: 100%;
   display: flex;
-  flex-direction: row;
-  padding: 0px 10px 10px 10px;
-  margin-left: 40px;
+  
+  /* justify-content: center; */
+  /* padding: 0px 10px 10px 10px; */
+  /* margin-left: 40px; */
   margin-top: 60px;
 `;
 
@@ -247,13 +266,13 @@ const StInputBox = styled.div`
 `;
 
 const StImgBox = styled.div`
-width: 50%;
+width: 70%;
 display: flex;
 align-items: center;
 justify-content: center;
 flex-direction: column;
-padding: 15px 40px 0px 40px;
-margin-right: 40px;
+/* padding: 15px 40px 0px 40px; */
+/* margin-right: 40px; */
  /* & > div:first-child {
   width: 60%;
   height: 370px;
@@ -263,9 +282,10 @@ margin-right: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 60px;
   width: 100%;
   margin-top: 40px;
+  padding-top: 30px;
   
  }
  /* & > div:nth-child(2) button {
@@ -281,7 +301,8 @@ const Stdiv = styled.div`
 
 const ViewImg = styled.div`
   border: 1px solid #004A7C;
-  width: 80%;
+  border-radius: 10px;
+  width: 100%;
   height: 400px;
   display: flex;
   justify-content: center;
@@ -289,6 +310,8 @@ const ViewImg = styled.div`
   img{
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
   }
 `;
 
