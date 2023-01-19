@@ -13,6 +13,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import { gTheme } from "../../../theme/globalTheme";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  __deletePost,
   __detailPost,
   __productFavorite,
 } from "../../../redux/modules/productSlice";
@@ -23,6 +24,7 @@ import {
   __deleteComment,
   __modifyComment,
 } from "../../../redux/modules/commentSlice";
+import { COMMON_DEALY_TIME } from "../../../shared/utils/delay";
 
 const ProductDetail = () => {
   const { productId } = useParams();
@@ -38,6 +40,13 @@ const ProductDetail = () => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState([]);
   const [favorite, setFavorite] = useState(false);
+
+  const handlePostDelete = () => {
+    dispatch(__deletePost(productId));
+    // setTimeout(() => {
+    //   navigate("/");
+    // }, COMMON_DEALY_TIME);
+  };
 
   const handleFavorite = () => {
     setFavorite((state) => !state);
@@ -95,7 +104,10 @@ const ProductDetail = () => {
                   <IconButton sx={{ color: "lightgray" }}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton sx={{ color: "lightgray" }}>
+                  <IconButton
+                    sx={{ color: "lightgray" }}
+                    onClick={handlePostDelete}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </>

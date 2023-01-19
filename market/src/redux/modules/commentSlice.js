@@ -86,6 +86,7 @@ const commentSlice = createSlice({
         state.isSuccess = true;
         state.isLoading = false;
         state.comments = action.payload;
+        console.log("댓글 데이터!", action.payload);
       })
       .addCase(__getComments.rejected, (state, action) => {
         state.isSuccess = false;

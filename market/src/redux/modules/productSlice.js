@@ -10,6 +10,7 @@ export const actionType = {
   product: {
     GET_POST_DETAIL: "GET_POST_DETAIL",
     POST_POST_FAVORITE: "POST_POST_FAVORITE",
+    DELETE_POST_FAVORITE: "DELETE_POST_FAVORITE",
   },
 };
 
@@ -128,6 +129,19 @@ export const __getPostThunk = createAsyncThunk(
 
 ///////// 게시글 삭제 thunk,DELETE ///////////////////
 
+export const __deletePost = createAsyncThunk(
+  actionType.product.DELETE_POST_FAVORITE,
+  async (id, thunkAPI) => {
+    try {
+      const result = await client.delete(`/posts/${id}`);
+      console.log(result);
+      return thunkAPI.fulfillWithValue(result.data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
 /////////////// 게시글 수정 ////////////////////////
 
 /////////// 단일 게시글 조회 /////////////////
@@ -218,16 +232,26 @@ export const productSlice = createSlice({
       state.isLoading = false;
       state.error = action.payload;
     },
-    // 상품 상세
-    [__detailPost.pending]: (state) => {
+    // 상품 삭제
+    [__deletePost.pending]: (state) => {
       state.isLoading = true;
     },
-    [__detailPost.fulfilled]: (state, action) => {
+    [__deletePost.fulfilled]: (state, action) => {
+      state.isLoading = false;
+    },
+    [__deletePost.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    // 찜하기
+    [__productFavorite.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [__productFavorite.fulfilled]: (state, action) => {
       state.isLoading = false;
       state.detailPost = action.payload;
-      console.log("상세 데이터!", action.payload);
     },
-    [__detailPost.rejected]: (state, action) => {
+    [__productFavorite.rejected]: (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
     },
