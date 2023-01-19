@@ -166,6 +166,7 @@ export const __productFavorite = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       const result = await client.patch(`/posts/like/${id}`);
+      console.log(result.data);
       return thunkAPI.fulfillWithValue(result.data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -216,6 +217,19 @@ export const productSlice = createSlice({
       console.log("action.payload", action.payload);
     },
     [__addPostThunk.rejected]: (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+    // 상품 상세
+    [__detailPost.pending]: (state) => {
+      state.isLoading = true;
+    },
+    [__detailPost.fulfilled]: (state, action) => {
+      state.isLoading = false;
+      state.detailPost = action.payload;
+      console.log("상세 데이터!", action.payload);
+    },
+    [__detailPost.rejected]: (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
     },

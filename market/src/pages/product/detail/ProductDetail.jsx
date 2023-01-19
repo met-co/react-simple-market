@@ -12,7 +12,10 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { gTheme } from "../../../theme/globalTheme";
 import { useDispatch, useSelector } from "react-redux";
-import { __detailPost } from "../../../redux/modules/productSlice";
+import {
+  __detailPost,
+  __productFavorite,
+} from "../../../redux/modules/productSlice";
 import { priceToString } from "../../../shared/utils/priceToString";
 import {
   __submitComment,
@@ -38,6 +41,7 @@ const ProductDetail = () => {
 
   const handleFavorite = () => {
     setFavorite((state) => !state);
+    dispatch(__productFavorite(productId));
   };
 
   const onChangeComment = (e) => {
@@ -70,7 +74,8 @@ const ProductDetail = () => {
 
   useEffect(() => {
     setComments(commentsData);
-  }, [commentsData]);
+    setFavorite(detailPost.wishState);
+  }, [commentsData, detailPost]);
 
   return (
     <Layout>
