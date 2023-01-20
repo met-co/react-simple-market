@@ -26,6 +26,7 @@ fileAPI.interceptors.response.use(
     }
     if (error.response.status === 403) {
       window.alert("권한이 없는 사용자입니다.");
+      window.location.href = "/signin";
     }
     if (error.response.status === 404) {
       window.alert("데이터를 찾을 수 없습니다.");

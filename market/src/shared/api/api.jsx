@@ -44,3 +44,8 @@ client.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+/* Helper Method */
+export const clearToken = () => {
+  client.defaults.headers.common["Authorization"] = "";
+};

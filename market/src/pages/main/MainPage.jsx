@@ -7,6 +7,9 @@ import Card from "../../components/Card";
 import styled from "styled-components";
 import { __getPostThunk } from "../../redux/modules/productSlice";
 import { __userInfo } from "../../redux/modules/userSlice";
+import { tokenManager } from "../../shared/utils/tokenManager";
+import { common } from "@mui/material/colors";
+import { COMMON_DEALY_TIME } from "../../shared/utils/delay";
 
 const MainPage = () => {
   const navigate = useNavigate();
@@ -17,18 +20,23 @@ const MainPage = () => {
 
   useEffect(() => {
     dispatch(__getPostThunk());
-  }, [dispatch]);
 
-  useEffect(() => {
-    dispatch(__userInfo());
+    if (tokenManager.token) {
+      dispatch(__userInfo());
+    }
   }, []);
 
   return (
     <Layout>
       <Header />
-      <StUsername>
-        <div>{nickName}님 안녕하세요.</div>
-      </StUsername>
+      {tokenManager.token ? (
+        <StUsername>
+          <div>{nickName}님 안녕하세요.</div>
+        </StUsername>
+      ) : (
+        <div></div>
+      )}
+
       <StHalves>
         <img src="img/clem.jpg" />
         <StHalves_half>

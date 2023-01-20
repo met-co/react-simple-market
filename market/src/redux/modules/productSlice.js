@@ -64,7 +64,6 @@ export const __addPostThunk = createAsyncThunk(
       // for (var value of formData.values()) {
       //   console.log(value);
       // }
-      console.log(payload);
       return thunkAPI.fulfillWithValue(payload);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -119,7 +118,6 @@ export const __getPostThunk = createAsyncThunk(
         },
         { withCredentials: true }
       );
-      console.log("get data", data);
       return thunkAPI.fulfillWithValue(data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -180,10 +178,9 @@ const initialState = {
     name: "",
     discription: "",
     price: 0,
-    // category: "",
-    // image: "",
   },
   error: null,
+  isSuccess: false,
   isLoading: false,
   detailPost: {},
 };
@@ -192,14 +189,20 @@ const initialState = {
 export const productSlice = createSlice({
   name: "posts",
   initialState,
-  reducers: {},
+  reducers: {
+    __postReset: (state, action) => {
+      state.isSuccess = false;
+      state.isLoading = false;
+      state.post = {};
+    },
+  },
   extraReducers: {
     [__getPostThunk.pending]: (state) => {
       state.isLoading = true;
     },
     [__getPostThunk.fulfilled]: (state, action) => {
       state.isLoading = false;
-      console.log("action.payload", action.payload);
+      console.log("__getPostThunk 데이터", action.payload);
       state.post_list = action.payload.content;
     },
     [__getPostThunk.rejected]: (state, action) => {
@@ -207,14 +210,16 @@ export const productSlice = createSlice({
       state.error = action.payload;
     },
     [__addPostThunk.pending]: (state) => {
+      state.isSuccess = false;
       state.isLoading = true;
     },
     [__addPostThunk.fulfilled]: (state, action) => {
+      state.isSuccess = true;
       state.isLoading = false;
-      state.post_list = [...state.post_list, action.payload];
-      console.log("action.payload", action.payload);
+      console.log("__addPostThunk 데이터", action.payload);
     },
     [__addPostThunk.rejected]: (state, action) => {
+      state.isSuccess = false;
       state.isLoading = false;
       state.error = action.payload;
     },
@@ -271,4 +276,5 @@ export const productSlice = createSlice({
 // 액션크리에이터는 컴포넌트에서 사용하기 위해 export 하고
 // export const {} = guestBooksSlice.actions;
 // reducer 는 configStore에 등록하기 위해 export default 합니다.
+export const { __postReset } = productSlice.actions;
 export default productSlice.reducer;

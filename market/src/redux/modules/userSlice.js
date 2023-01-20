@@ -63,9 +63,13 @@ export const __userInfo = createAsyncThunk(
   actionType.user.GET_USER_INFO,
   async (_, thunkAPI) => {
     try {
+      client.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${tokenManager.token}`;
       const result = await client.get(
         process.env.REACT_APP_BASE_URL + "/api/user/info"
       );
+
       console.log(result.data);
       return thunkAPI.fulfillWithValue(result.data);
     } catch (error) {
@@ -86,6 +90,21 @@ export const __changePassword = createAsyncThunk(
       );
       console.log(result.data);
       return thunkAPI.fulfillWithValue(result.data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+
+/* 계정 삭제 */
+export const __deleteUser = createAsyncThunk(
+  actionType.user.DELETE_USER,
+  async (user, thunkAPI) => {
+    try {
+      await client.delete(
+        process.env.REACT_APP_BASE_URL + `/api/user/delete/${user}`
+      );
+      return thunkAPI.fulfillWithValue(user);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -159,7 +178,11 @@ const userSlice = createSlice({
         state.isSuccess = false;
         state.isLoading = false;
         state.error = action.payload.response.data.errorMessage;
-      });
+      })
+      // 계정 삭제
+      .addCase(__deleteUser.pending, () => {})
+      .addCase(__deleteUser.fulfilled, () => {})
+      .addCase(__deleteUser.rejected, () => {});
   },
 });
 
