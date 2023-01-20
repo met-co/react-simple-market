@@ -63,9 +63,13 @@ export const __userInfo = createAsyncThunk(
   actionType.user.GET_USER_INFO,
   async (_, thunkAPI) => {
     try {
+      client.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${tokenManager.token}`;
       const result = await client.get(
         process.env.REACT_APP_BASE_URL + "/api/user/info"
       );
+
       console.log(result.data);
       return thunkAPI.fulfillWithValue(result.data);
     } catch (error) {

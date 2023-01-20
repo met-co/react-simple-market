@@ -20,12 +20,6 @@ const MainPage = () => {
 
   useEffect(() => {
     dispatch(__getPostThunk());
-
-    setTimeout(() => {
-      dispatch(__userInfo());
-    }, COMMON_DEALY_TIME);
-
-    // }
   }, []);
 
   return (
