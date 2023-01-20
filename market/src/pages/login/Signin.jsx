@@ -39,7 +39,6 @@ const Signin = () => {
   const handleSuccess = () => {
     if (isSuccess) {
       setAlertMessage({});
-      dispatch(__userInfo());
       navigate("/");
     }
   };

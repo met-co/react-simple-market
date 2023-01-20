@@ -20,6 +20,10 @@ const MainPage = () => {
 
   useEffect(() => {
     dispatch(__getPostThunk());
+
+    if (tokenManager.token) {
+      dispatch(__userInfo());
+    }
   }, []);
 
   return (

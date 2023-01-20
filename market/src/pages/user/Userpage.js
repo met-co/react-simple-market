@@ -15,6 +15,8 @@ import { Loading } from "../../components/ui/Loading";
 import { __changePassword } from "../../redux/modules/userSlice";
 import { useDispatch } from "react-redux";
 import { __deleteUser } from "../../redux/modules/userSlice";
+import axios from "axios";
+import { clearToken, client } from "../../shared/api/api";
 
 const Userpage = () => {
   const navigate = useNavigate();
@@ -60,6 +62,7 @@ const Userpage = () => {
 
   const logoutSubmit = () => {
     localStorage.clear();
+    clearToken();
     navigate("/");
   };
 
